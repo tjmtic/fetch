@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,16 +21,41 @@ fun ItemScreen(
     viewModel : ItemViewModel = hiltViewModel()
 ){
     val itemState by viewModel.state.collectAsStateWithLifecycle()
+    val sorted by remember { mutableIntStateOf(0)}
     //Sorting "when displaying" (I.e. on UI thread)
     val sortedItems by remember {
         derivedStateOf {
-            //Sort by listId -- "listId" is the Key in this Map
+            when(sorted){
+                1 -> { //Sort by listId -- "listId" is the Key in this Map
+                    itemState.items?.toSortedMap()?.mapValues { entry ->
+                        //Then, sort by Name -- "name" is the Item name Value in this List
+                        entry.value.sortedBy { it.name }
+                    } ?: emptyMap()}
+                2 -> { //Sort by listId -- "listId" is the Key in this Map
+                    itemState.items?.toSortedMap()?.mapValues { entry ->
+                        //Then, sort by Name -- "name" is the Item name Value in this List
+                        entry.value.sortedBy { it.name }
+                    } ?: emptyMap()}
+                3 -> { //Sort by listId -- "listId" is the Key in this Map
+                    itemState.items?.toSortedMap()?.mapValues { entry ->
+                        //Then, sort by Name -- "name" is the Item name Value in this List
+                        entry.value.sortedBy { it.name }
+                    } ?: emptyMap()}
+                4 -> { //Sort by listId -- "listId" is the Key in this Map
+                    itemState.items?.toSortedMap()?.mapValues { entry ->
+                        //Then, sort by Name -- "name" is the Item name Value in this List
+                        entry.value.sortedBy { it.name }
+                    } ?: emptyMap()}
+                else -> { emptyMap() }
+            }
+            /*//Sort by listId -- "listId" is the Key in this Map
             itemState.items?.toSortedMap()?.mapValues { entry ->
-                //Then, sort by Name -- "name" is the Value in this Map
+                //Then, sort by Name -- "name" is the Item name Value in this List
                 entry.value.sortedBy { it.name }
-            } ?: emptyMap()
+            } ?: emptyMap()*/
         }
     }
+
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -43,6 +69,7 @@ fun ItemScreen(
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
+
             sortedItems.forEach { (listId, items) ->
                 item {
                     Text(text = listId.toString())

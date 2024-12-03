@@ -34,10 +34,11 @@ class ItemViewModel @Inject constructor(val itemRepository: ItemRepository): Vie
     )
 
     private val isLoading = MutableStateFlow(false)
+    private val sortedState = MutableStateFlow<SortedState>(SortedState.Default)
 
 
-    val state = combine(items, isLoading){ items, loading ->
-        ItemState(loading, items)
+    val state = combine(items, isLoading, sortedState){ items, loading, sorted ->
+        ItemState(loading, items, sorted)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -61,9 +62,21 @@ class ItemViewModel @Inject constructor(val itemRepository: ItemRepository): Vie
             }
         }
     }
+
+    fun updateSort(sortedBy: SortedState){
+        sortedState.value = sortedBy
+    }
 }
 
 data class ItemState(
     val isLoading: Boolean = false,
-    val items: Map<Int, List<Item>>? = null
+    val items: Map<Int, List<Item>>? = null,
+    val sorted: SortedState = SortedState.Default
 )
+
+sealed class SortedState {
+    object Default: SortedState()
+    object Name: SortedState()
+    object Price: SortedState()
+    object Rating: SortedState()
+}
